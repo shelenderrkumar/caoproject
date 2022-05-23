@@ -1,0 +1,126 @@
+#define DELAY 1000
+
+//define the pins that are used in the project to connect the external devices like relay, water level sensor and LEDs.
+int echo = 22; //Echo pin of ultrasonic sensor connected to Arduino pin 9
+int trig = 23; //Trig pin of ultrasonic sensor connected to Arduino pin 8
+int buzzer = 21;
+int led_red = 19; //Red lED connected to Arduino pin 13
+int led_red2 = 18; //Second red lED is connected to Arduino pin 12
+int led_blue = 5; //Blue lED connected to Arduino pin 11
+int led_green = 2; //Green lED connected to Arduino pin 10
+
+
+
+void setup() {
+  
+// PIN Mode configuration
+pinMode(echo, INPUT); //echo pin set as input pin
+// below pins are defined in the output mode
+pinMode(trig, OUTPUT);
+pinMode(buzzer, OUTPUT);
+pinMode(led_red, OUTPUT);
+pinMode(led_red2, OUTPUT);
+pinMode(led_blue, OUTPUT);
+pinMode(led_green, OUTPUT);
+
+
+}
+
+
+void loop() 
+{
+  
+// put your main code here, to run repeatedly:
+//calculate the level of tank
+int level = tank_level(trig, echo);
+
+// if the level of water is in this range
+if (level <= 10)
+{
+  
+digitalWrite(led_green, HIGH); //green led is switched on
+digitalWrite(led_blue, HIGH); //blue led is switched on
+digitalWrite(led_red, HIGH); //red led is switched on
+digitalWrite(led_red2, HIGH); //second red led is switched on
+digitalWrite(buzzer, HIGH);
+}
+
+// if the level of water is in this range
+else if (level > 10 && level <= 50)
+{
+digitalWrite(led_green, LOW); //green led is switched off
+digitalWrite(led_blue, HIGH); //blue led is switched on
+digitalWrite(led_red, HIGH); //red led is switched on
+digitalWrite(led_red2, HIGH); //second red led is switched on
+digitalWrite(buzzer, LOW);
+}
+
+
+// if the level of water is in this range
+else if (level > 50 && level <= 100)
+{
+digitalWrite(led_green, LOW); //green led is switched off
+digitalWrite(led_blue, LOW); //blue led is switched off
+digitalWrite(led_red, HIGH); //red led is switched on
+digitalWrite(led_red2, HIGH); //second red led is switched on
+digitalWrite(buzzer, LOW);
+}
+
+
+// if the water has reached to this level
+else if (level > 100 && level <= 150)
+{
+digitalWrite(led_green, LOW); //green led is switched off
+digitalWrite(led_blue, LOW); //blue led is switched off
+digitalWrite(led_red2, LOW); //red led is switched off
+digitalWrite(led_red, HIGH); //second red led is switched on
+digitalWrite(buzzer, LOW);
+}
+
+// if the level of water is in this range
+else if (level > 150 && level <= 200)
+{
+digitalWrite(led_green, LOW); //green led is switched off
+digitalWrite(led_blue, LOW); //blue led is switched off
+digitalWrite(led_red, LOW); //red led is switched off
+digitalWrite(led_red2, LOW); //second red led is switched off
+digitalWrite(buzzer, LOW);
+}
+
+delay(DELAY); //delay of DELAY microseconds
+}
+
+
+// definition of function tank_level that calculates the level of tank
+int tank_level(int trig, int echo)
+{
+  
+// Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+digitalWrite(trig, LOW);
+delayMicroseconds(10);
+
+// Sets the trigPin on HIGH state for 10 micro seconds
+digitalWrite(trig, HIGH);
+delayMicroseconds(10);
+
+digitalWrite(trig, LOW);
+
+// reads the echoPin, returns the travel time of sound wave in microseconds
+int duration = pulseIn(echo, HIGH); //save the value returned by function in variable duration
+int distance = time_to_distance(duration); //value returned by function time_to_distance is saved into a variable distance
+return distance; //level of tank is returneed
+
+} //end function tank_level
+
+
+
+//definition of function time_to_distance that converts the time into distance
+int time_to_distance(int microseconds)
+{
+  
+// The speed of sound is 340 m/s or 29 microseconds per centimeter.
+// The wave travels out and back, so to find the distance of the object we take half of the distance travelled.
+//return the distance calculated by the formula
+return (microseconds / 29) / 2;
+
+} //end function time_to_definition
